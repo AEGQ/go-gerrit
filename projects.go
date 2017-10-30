@@ -164,6 +164,14 @@ type ConfigInput struct {
 	PluginConfigValues               map[string]map[string]string `json:"plugin_config_values,omitempty"`
 }
 
+//ProjectAccessInput entity describes changes that should be applied to a project access config
+type ProjectAccessInput struct {
+	Remove  map[string]AccessSectionInfo `json:"remove,omitempty"`
+	Add     map[string]AccessSectionInfo `json:"add,omitempty"`
+	Message string                       `json:"message,omitempty"`
+	Parent  string                       `json:"parent,omitempty"`
+}
+
 // ProjectBaseOptions specifies the really basic options for projects
 // and sub functionality (e.g. Tags)
 type ProjectBaseOptions struct {
@@ -204,6 +212,14 @@ type ProjectOptions struct {
 
 	// Get projects with specified type: ALL, CODE, PERMISSIONS.
 	Type string `url:"type,omitempty"`
+}
+
+func (s *ProjectsService) UpdateProjectAccess(projectName string, input *ProjectAccessInput) (*ProjectAccessInfo, *Response, error) {
+	u := fmt.Sprintf("projects/%s/access", url.QueryEscape(projectName))
+
+	v := new(ProjectAccessInfo)
+	resp, err := s.client.Call("POST", u, input, v)
+	return v, resp, err
 }
 
 // ListProjects lists the projects accessible by the caller.
